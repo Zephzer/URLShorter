@@ -13,6 +13,6 @@ db.on('error', () => {
 })
 db.once('open', () => {
     console.log('mongodb connected!')
-    Url.create({ shortURL: '132', longURL:'321'})
+    Url.create({ shortURL: 'https://www.youtube.com/', longURL:'http://localhost:3000/pz2ve'})
     console.log('done')
 })
