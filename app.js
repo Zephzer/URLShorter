@@ -33,24 +33,30 @@ app.get('/', (req, res) => {
 app.post('/shorten', (req, res) => {
     longurl = ''
     longurl += req.body.url
-    if (longurl.length === 0) {
-        res.redirect('/')
+    if (!req.body.url) {
+        res.redirect('/nourl')
     }
     // 判斷是否已有相同的長網址被存入資料庫
-    URL.find({ longURL: longurl }, (error, urls) => {
-        if (urls.length === 0) {
-            // 生成隨機的短代碼
-            const shortCode = Math.random().toString(36).substr(2, 5)
-            // 構建縮短網址
-            const shorturl = "http://localhost:3000/" + shortCode
-            return URL.create({ shortURL:shorturl, longURL:longurl })
-                .then(() => res.redirect('/show'))
-                .catch(error => console.log(error))
-        }
-        else {
-            res.redirect('/show')
-        }
-    })
+    else{
+        URL.find({ longURL: longurl }, (error, urls) => {
+            if (urls.length === 0) {
+                // 生成隨機的短代碼
+                const shortCode = Math.random().toString(36).substr(2, 5)
+                // 構建縮短網址
+                const shorturl = "http://localhost:3000/" + shortCode
+                return URL.create({ shortURL:shorturl, longURL:longurl })
+                    .then(() => res.redirect('/show'))
+                    .catch(error => console.log(error))
+            }
+            else {
+                res.redirect('/show')
+            }
+        })
+    }
+})
+
+app.get('/nourl',(req, res) => {
+    res.render('nourl')
 })
 
 app.get('/show', (req, res) => {
