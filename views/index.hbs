@@ -3,25 +3,12 @@
     <img src="https://assets-lighthouse.alphacamp.co/uploads/image/file/16716/ExportedContentImage_00.png"
         style="max-width: 100px;">
     <div class="input-group mb-3 mt-5">
-        <input type="text" class="form-control" placeholder="input URL" aria-label="Recipient's username"
-            aria-describedby="button-addon2">
-        <button class="btn btn-primary" type="submit" id="button-addon2" data-bs-toggle="modal"
-            data-bs-target="#exampleModal">Shorten</button>
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Success!</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h2 class="short-url">OK</h2>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">Copy</button>
-                    </div>
-                </div>
+        <form action="/shorten" id="shorten-form" method="POST" style="display: inline; width:100%">
+            <div class="input-group">
+                <input type="text" name="url" class="form-control" id="shorten-input"
+                    placeholder="input URL" aria-label="Recipient's username" aria-describedby="button-addon2">
+                <button class="btn btn-primary" type="submit" id="shorten-button">Shorten</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
