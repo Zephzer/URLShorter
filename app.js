@@ -4,6 +4,7 @@ const exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const URL = require('./models/urls')
+let longurl = ''
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
@@ -24,27 +25,50 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
     URL.find()
-       .lean()
-       .then(() => res.render('index'))
-       .catch(error => console.log(error))
-})
-
-app.post('/shorten', (req, res) => {
-    const longURL = req.body.url
-    // 生成隨機的短代碼
-    const shortCode = Math.random().toString(36).substr(2, 6)
-    // 構建縮短網址
-    const shortURL = "http://localhost:3000/" + shortCode
-    return URL.create({ shortURL, longURL })
-        .then(() => res.redirect('/show'))
+        .lean()
+        .then(() => res.render('index'))
         .catch(error => console.log(error))
 })
 
+app.post('/shorten', (req, res) => {
+    longurl = ''
+    longurl += req.body.url
+    if (longurl.length === 0) {
+        res.redirect('/')
+    }
+    // 判斷是否已有相同的長網址被存入資料庫
+    URL.find({ longURL: longurl }, (error, urls) => {
+        if (urls.length === 0) {
+            // 生成隨機的短代碼
+            const shortCode = Math.random().toString(36).substr(2, 5)
+            // 構建縮短網址
+            const shorturl = "http://localhost:3000/" + shortCode
+            return URL.create({ shortURL:shorturl, longURL:longurl })
+                .then(() => res.redirect('/show'))
+                .catch(error => console.log(error))
+        }
+        else {
+            res.redirect('/show')
+        }
+    })
+})
+
 app.get('/show', (req, res) => {
-    URL.find({ longURL: '321' })
-       .lean()
-       .then(url => res.render('show', { url: url[0] }))
-       .catch(error =>  console.log(error))
+    URL.find({ longURL: longurl })
+        .lean()
+        .then(url => res.render('show', { url: url[0] }))
+        .catch(error => console.log(error))
+})
+
+app.get('/:short', (req, res) => {
+    const Shorturl = 'http://localhost:3000' + req.url
+    console.log(Shorturl)
+    URL.find({ shortURL: Shorturl }, (error, urls) => {
+        if(urls){
+            console.log(urls)
+            res.redirect(`${urls[0].longURL}`)
+        }
+    })
 })
 
 app.listen(3000, () => {
