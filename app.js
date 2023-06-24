@@ -24,10 +24,7 @@ app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-    URL.find()
-        .lean()
-        .then(() => res.render('index'))
-        .catch(error => console.log(error))
+    return res.render('index')
 })
 
 app.post('/shorten', (req, res) => {
@@ -38,8 +35,8 @@ app.post('/shorten', (req, res) => {
     }
     // 判斷是否已有相同的長網址被存入資料庫
     else{
-        URL.find({ longURL: longurl }, (error, urls) => {
-            if (urls.length === 0) {
+        URL.findOne({ longurl }, (error, urls) => {
+            if (!urls) {
                 // 生成隨機的短代碼
                 const shortCode = Math.random().toString(36).substr(2, 5)
                 // 構建縮短網址
@@ -69,13 +66,13 @@ app.get('/show', (req, res) => {
 app.get('/:short', (req, res) => {
     const Shorturl = 'http://localhost:3000' + req.url
     console.log(Shorturl)
-    URL.find({ shortURL: Shorturl }, (error, urls) => {
-        if(urls){
-            console.log(urls)
-            res.redirect(`${urls[0].longURL}`)
-        }
+    URL.find({ shortURL:Shorturl })
+        .lean()
+        .then(url => {
+            res.redirect(url[0].longURL)
+        })
+        .catch(error => console.log(error))
     })
-})
 
 app.listen(3000, () => {
     console.log(`App is running on http://localhost:3000`)
